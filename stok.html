@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stok Bahan Ajar - Vue.js</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header><h1>📦 Stok Bahan Ajar Universitas Terbuka</h1></header>
+
+  <div id="stokApp" class="container">
+    <h2>Daftar Stok Bahan Ajar</h2>
+
+    <!-- Filter Section -->
+    <div class="form-section">
+      <label>Filter UT-Daerah</label>
+      <select v-model="filter.upbjj">
+        <option value="">Semua</option>
+        <option v-for="u in upbjjList" :key="u" :value="u">{{ u }}</option>
+      </select>
+
+      <label>Kategori Mata Kuliah</label>
+      <select v-model="filter.kategori" :disabled="!filter.upbjj">
+        <option value="">Semua</option>
+        <option v-for="k in kategoriList" :key="k" :value="k">{{ k }}</option>
+      </select>
+
+      <label>Filter Status Stok</label>
+      <select v-model="filter.status">
+        <option value="">Semua</option>
+        <option value="low">Menipis</option>
+        <option value="empty">Kosong</option>
+      </select>
+
+      <label>Sortir Berdasarkan</label>
+      <select v-model="sortBy">
+        <option value="">Tidak Ada</option>
+        <option value="judul">Judul</option>
+        <option value="qty">Jumlah Stok</option>
+        <option value="harga">Harga</option>
+      </select>
+
+      <button @click="resetFilter">🔄 Reset Filter</button>
+    </div>
+
+    <!-- Tabel -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Judul</th>
+            <th>Kategori</th>
+            <th>UPBJJ</th>
+            <th>Rak</th>
+            <th>Qty</th>
+            <th>Safety</th>
+            <th>Harga</th>
+            <th>Status</th>
+            <th>Catatan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="b in sortedFilteredStok" :key="b.kode">
+            <td>{{ b.kode }}</td>
+            <td>{{ b.judul }}</td>
+            <td>{{ b.kategori }}</td>
+            <td>{{ b.upbjj }}</td>
+            <td>{{ b.lokasiRak }}</td>
+            <td contenteditable="true" @blur="updateQty(b, $event)">{{ b.qty }}</td>
+            <td>{{ b.safety }}</td>
+            <td>Rp {{ b.harga.toLocaleString() }}</td>
+            <td>
+              <span v-if="b.qty === 0" class="status-kosong">Kosong ❌</span>
+              <span v-else-if="b.qty < b.safety" class="status-menipis">Menipis ⚠️</span>
+              <span v-else class="status-aman">Aman ✅</span>
+            </td>
+            <td v-html="b.catatanHTML"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Form Tambah -->
+    <div class="form-section">
+      <h3>Tambah Bahan Ajar Baru</h3>
+      <input v-model="newItem.kode" placeholder="Kode">
+      <input v-model="newItem.judul" placeholder="Judul">
+      <input v-model="newItem.kategori" placeholder="Kategori">
+      <input v-model="newItem.upbjj" placeholder="UPBJJ">
+      <input v-model="newItem.lokasiRak" placeholder="Lokasi Rak">
+      <input type="number" v-model.number="newItem.qty" placeholder="Qty">
+      <input type="number" v-model.number="newItem.safety" placeholder="Safety">
+      <input type="number" v-model.number="newItem.harga" placeholder="Harga">
+      <textarea v-model="newItem.catatanHTML" placeholder="Catatan HTML"></textarea>
+      <button @click="addItem">Tambah</button>
+      <p class="note">{{ pesan }}</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="js/dataBahanAjar.js"></script>
+  <script src="js/stok-app.js"></script>
+</body>
+</html>

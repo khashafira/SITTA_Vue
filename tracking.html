@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tracking Delivery Order - Vue.js</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header><h1>🚚 Tracking Delivery Order (DO)</h1></header>
+
+  <div id="trackingApp" class="container">
+    <!-- BAGIAN 1: FORM TAMBAH DO -->
+    <section class="form-section">
+      <h2>Tambah Delivery Order Baru</h2>
+
+      <div>
+        <label>NIM</label>
+        <input v-model="newDO.nim" placeholder="Masukkan NIM Mahasiswa" required />
+
+        <label>Nama</label>
+        <input v-model="newDO.nama" placeholder="Masukkan Nama Mahasiswa" required />
+
+        <label>Ekspedisi</label>
+        <select v-model="newDO.ekspedisi">
+          <option disabled value="">Pilih Ekspedisi</option>
+          <option v-for="p in pengirimanList" :key="p.kode" :value="p.nama">
+            {{ p.nama }}
+          </option>
+        </select>
+
+        <label>Paket Bahan Ajar</label>
+        <select v-model="selectedPaket">
+          <option disabled value="">Pilih Paket</option>
+          <option v-for="p in paketList" :key="p.kode" :value="p.kode">
+            {{ p.kode }} - {{ p.nama }}
+          </option>
+        </select>
+
+        <div v-if="detailPaket">
+          <p><strong>Isi Paket:</strong></p>
+          <ul>
+            <li v-for="kode in detailPaket.isi" :key="kode">{{ kode }}</li>
+          </ul>
+          <p><strong>Total Harga:</strong> Rp {{ detailPaket.harga.toLocaleString() }}</p>
+        </div>
+
+        <label>Tanggal Kirim</label>
+        <input type="date" v-model="newDO.tanggalKirim" />
+
+        <button @click="tambahDO">Tambah DO Baru</button>
+        <p class="note">{{ pesan }}</p>
+      </div>
+    </section>
+
+    <!-- BAGIAN 2: TRACKING STATUS DO -->
+    <section class="form-section" style="margin-top: 2rem;">
+      <h2>Cek Status Delivery Order</h2>
+      <input v-model="nomorDO" placeholder="Masukkan Nomor DO (misal: DO2025-0001)" />
+      <button @click="cekTracking">Cek Status</button>
+
+      <div v-if="hasil" style="margin-top: 1rem;">
+        <h3>Status DO: {{ hasil.status }}</h3>
+        <p><strong>NIM:</strong> {{ hasil.nim }}</p>
+        <p><strong>Nama:</strong> {{ hasil.nama }}</p>
+        <p><strong>Ekspedisi:</strong> {{ hasil.ekspedisi }}</p>
+        <p><strong>Paket:</strong> {{ hasil.paket }}</p>
+        <p><strong>Total:</strong> Rp {{ hasil.total.toLocaleString() }}</p>
+
+        <h4>Riwayat Perjalanan:</h4>
+        <ul>
+          <li v-for="p in hasil.perjalanan" :key="p.waktu">
+            {{ p.waktu }} - {{ p.keterangan }}
+          </li>
+        </ul>
+      </div>
+
+      <p v-if="tidakAda" style="color: red; margin-top: 1rem;">
+        ❌ Nomor DO tidak ditemukan.
+      </p>
+    </section>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="js/dataBahanAjar.js"></script>
+  <script src="js/tracking-app.js"></script>
+</body>
+</html>
